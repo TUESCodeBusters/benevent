@@ -45,17 +45,18 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        View header=navigationView.getHeaderView(0);
-/*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
-        TextView email = (TextView)header.findViewById(R.id.email);
+        View header = navigationView.getHeaderView(0);
+
+        TextView email = (TextView) header.findViewById(R.id.user_email);
+
         SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.current_logged_in_email), Context.MODE_PRIVATE);
-        String emailText = sharedPref.getString(getString(R.string.current_logged_in_email), "KON");
+        String emailText = sharedPref.getString(getString(R.string.current_logged_in_email), getString(R.string.unavailable_email));
+
         Log.d("Email", emailText);
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        if(emailText == "KON") {
-            Intent intent2 = new Intent(this, LoginActivity.class);
-            startActivity(intent2);
+
+        if(emailText.equals("none")) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
         }
         else {
             email.setText(emailText);

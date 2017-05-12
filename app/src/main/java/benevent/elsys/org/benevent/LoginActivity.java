@@ -337,7 +337,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected String doInBackground(String... params) {
 
-            String url = "http://benevent-api.herokuapp.com/auth/sign_in";
+            String url = "https://benevent-api.herokuapp.com/auth/sign_in";
             StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                     new Response.Listener<String>()
                     {
@@ -350,14 +350,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 JSONObject jsonResult = new JSONObject(response);
                                 final String email = jsonResult.getJSONObject("data").getString("email");
                                 final String id = jsonResult.getJSONObject("data").getString("id");
+
                                 SharedPreferences sharedPref = activity.getSharedPreferences(getString(R.string.current_logged_in_email), Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString(getString(R.string.current_logged_in_email), email);
                                 editor.apply();
+
                                 SharedPreferences sharedPrefId = activity.getSharedPreferences(getString(R.string.current_logged_in_user_id), Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor2 = sharedPrefId.edit();
                                 editor2.putString(getString(R.string.current_logged_in_user_id), id);
-                                editor2.commit();
+                                editor2.apply();
 
                                 Log.d("Shared email", sharedPref.getString(getString(R.string.current_logged_in_email), null));
                                 Log.d("Shared user id", sharedPrefId.getString(getString(R.string.current_logged_in_user_id), null));
