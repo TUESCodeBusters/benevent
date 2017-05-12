@@ -3,6 +3,7 @@ package benevent.elsys.org.benevent;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -28,7 +29,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,11 +68,13 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mPasswordComfirmView;
     private View mProgressView;
     private View mLoginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("---------------------------------------");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         // Set up the login form.
@@ -72,6 +83,18 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                    attemptLogin();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        mPasswordComfirmView = (EditText) findViewById(R.id.password_confirm);
+        mPasswordComfirmView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
@@ -155,6 +178,8 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String passwordConfirm = mPasswordComfirmView.getText().toString();
+
 
         boolean cancel = false;
         View focusView = null;
@@ -163,6 +188,12 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
+            cancel = true;
+        }
+
+        if (!password.equals(passwordConfirm)) {
+            mPasswordComfirmView.setError("Passwords do not match!");
+            focusView = mPasswordComfirmView;
             cancel = true;
         }
 
@@ -185,8 +216,8 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask = new UserLoginTask(email, password, passwordConfirm);
+            mAuthTask.execute((String[]) null);
         }
     }
 
@@ -196,7 +227,6 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
     }
 
@@ -294,50 +324,62 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<String, String, String> {
 
         private final String mEmail;
         private final String mPassword;
+        private final String mPasswordConfirm;
 
-        UserLoginTask(String email, String password) {
+        UserLoginTask(String email, String password, String passwordConfirm) {
+            System.out.println("*************************************************");
             mEmail = email;
             mPassword = password;
+            mPasswordConfirm = passwordConfirm;
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+        protected String doInBackground(String... params) {
+            String urlString = "http://tues.herokuapp.com/sign_up";
+
+            String resultToDisplay = "Qkata registraciq";
+
+            InputStream in = null;
+            try {
+                System.out.println("---------------------------------------");
+                URL url = new URL(urlString);
+
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                in = new BufferedInputStream(urlConnection.getInputStream());
+
+
+            } catch (Exception e) {
+
+                System.out.println(e.getMessage());
+
+                return e.getMessage();
+
+            }
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+                resultToDisplay = IOUtils.toString(in, "UTF-8");
+                //to [convert][1] byte stream to a string
             }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
+            catch (IOException e) {
+                e.printStackTrace();
             }
-
-            // TODO: register the new account here.
-            return true;
+            return resultToDisplay;
+            // TODO: attempt authentication against a network service.
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
+        protected void onPostExecute(final String success) {
+            System.out.println("===================================================");
+            System.out.println(success);
             showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
+            Context c = getApplicationContext();
+            CharSequence test = "Made registration";
+            Toast.makeText(c, test, Toast.LENGTH_LONG).show();
         }
 
         @Override
