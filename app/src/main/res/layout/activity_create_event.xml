@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="benevent.elsys.org.benevent.CreateEvent">
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Event"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp" />
+
+
+    <EditText
+        android:id="@+id/input_name"
+        android:layout_width="314dp"
+        android:layout_height="44dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Name"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
+
+    <EditText
+        android:id="@+id/input_desc"
+        android:layout_width="314dp"
+        android:layout_height="44dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Description"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginLeft="33dp"
+        android:layout_marginRight="33dp"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1">
+
+        <EditText
+            android:hint="Pick start date"
+            android:id="@+id/start_date"
+            android:layout_width="164dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.09" />
+
+        <Button
+            android:id="@+id/pick_start_date"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Pick start date"
+            android:onClick="showDatePickerDialog" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginLeft="33dp"
+        android:layout_marginRight="33dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1">
+
+        <EditText
+            android:hint="Pick start time"
+            android:id="@+id/start_time"
+            android:layout_width="164dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.09" />
+
+        <Button
+            android:id="@+id/pick_start_time"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Pick start time"
+            android:onClick="showDatePickerDialog" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1">
+
+        <EditText
+            android:hint="Pick end date"
+            android:id="@+id/end_date"
+            android:layout_width="164dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.09" />
+
+        <Button
+            android:id="@+id/pick_end_date"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Pick end date"
+            android:onClick="showDatePickerDialog" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1">
+
+        <EditText
+            android:hint="Pick end time"
+            android:id="@+id/end_time"
+            android:layout_width="164dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.09" />
+
+        <Button
+            android:id="@+id/pick_end_time"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Pick end time"
+            android:onClick="showDatePickerDialog" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1">
+        <EditText
+            android:hint="Select Location"
+            android:id="@+id/select_location"
+            android:layout_width="164dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.09" />
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="selectLocation"
+            android:text="Select Location"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="16dp" />
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="makeRequest"
+        android:text="Submit"/>
+</LinearLayout>
