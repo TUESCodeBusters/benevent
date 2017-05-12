@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -39,11 +40,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -60,7 +64,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class RegisterActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -82,19 +86,32 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mPasswordComfirmView;
     private View mProgressView;
     private View mLoginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                    attemptLogin();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        mPasswordComfirmView = (EditText) findViewById(R.id.password_confirm);
+        mPasswordComfirmView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
@@ -178,6 +195,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String passwordConfirm = mPasswordComfirmView.getText().toString();
+
 
         boolean cancel = false;
         View focusView = null;
@@ -186,6 +205,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
+            cancel = true;
+        }
+
+        if (!password.equals(passwordConfirm)) {
+            mPasswordComfirmView.setError("Passwords do not match!");
+            focusView = mPasswordComfirmView;
             cancel = true;
         }
 
@@ -208,8 +233,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((String) null);
+            mAuthTask = new UserLoginTask(email, password, passwordConfirm);
+            mAuthTask.execute((String[]) null);
         }
     }
 
@@ -219,7 +244,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
     }
 
@@ -296,7 +320,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
+                new ArrayAdapter<>(RegisterActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
@@ -321,18 +345,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private final String mEmail;
         private final String mPassword;
+        private final String mPasswordConfirm;
 
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
 
-        UserLoginTask(String email, String password) {
+        UserLoginTask(String email, String password, String passwordConfirm) {
             mEmail = email;
             mPassword = password;
+            mPasswordConfirm = passwordConfirm;
         }
 
         @Override
         protected String doInBackground(String... params) {
 
-            String url = "http://benevent-api.herokuapp.com/auth/sign_in";
+            String url = "http://benevent-api.herokuapp.com/auth";
             StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                     new Response.Listener<String>()
                     {
@@ -357,6 +383,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     Map<String, String>  params = new HashMap<>();
                     params.put("email", mEmail);
                     params.put("password", mPassword);
+                    params.put("password_confirmation", mPasswordConfirm);
+                    params.put("confirm_success_url", "http://benevent-api.herokuapp.com");
 
                     return params;
                 }
@@ -373,12 +401,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             if (success != null) {
                 finish();
-                Context c = LoginActivity.this;
-                CharSequence test = "Login success";
+                Context c = RegisterActivity.this;
+                CharSequence test = "Register success";
                 Toast.makeText(c, test, Toast.LENGTH_LONG).show();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                Context c = RegisterActivity.this;
+                CharSequence test = "Register unsuccess";
+                Toast.makeText(c, test, Toast.LENGTH_LONG).show();
             }
         }
 
