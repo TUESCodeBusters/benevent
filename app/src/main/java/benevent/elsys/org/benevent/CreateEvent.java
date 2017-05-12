@@ -266,7 +266,7 @@ public class CreateEvent extends AppCompatActivity {
             ) {
                 @Override
                 protected Map<String, String> getParams() {
-                    Map<String, String> params = new HashMap<>();
+//                    Map<String, String> params = new HashMap<>();
                     Map<String, String> temp = new HashMap<>();
                     temp.put("user_id", mUser);
                     temp.put("start", mStart);
@@ -276,15 +276,7 @@ public class CreateEvent extends AppCompatActivity {
                     temp.put("lat", mLat);
                     temp.put("lng", mLong);
 
-                    JSONObject jsonObject = new JSONObject(temp);
-                    try {
-                        String s = jsonObject.getString((String)jsonObject.names().get(0));
-                        Log.d("s", s);
-                        params.put("event", s);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return params;
+                    return temp;
                 }
             };
 
