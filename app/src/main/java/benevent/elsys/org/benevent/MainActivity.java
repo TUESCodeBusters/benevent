@@ -51,9 +51,11 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.current_logged_in_email), Context.MODE_PRIVATE);
         String emailText = sharedPref.getString(getString(R.string.current_logged_in_email), "KON");
         Log.d("Email", emailText);
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
         if(emailText == "KON") {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
+            Intent intent2 = new Intent(this, LoginActivity.class);
+            startActivity(intent2);
         }
         else {
             email.setText(emailText);

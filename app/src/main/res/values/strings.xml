@@ -18,6 +18,7 @@
         completions."
     </string>
     <string name="current_logged_in_email"></string>
+    <string name="current_logged_in_user_id"></string>
     <string name="title_activity_main">MainActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
