@@ -33,6 +33,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +55,9 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -338,6 +347,8 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         private final String mPassword;
         private final String mPasswordConfirm;
 
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+
         UserLoginTask(String email, String password, String passwordConfirm) {
             mEmail = email;
             mPassword = password;
@@ -346,90 +357,41 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 
         @Override
         protected String doInBackground(String... params) {
-            String result = "";
 
-            String url="http://benevent-api.herokuapp.com/auth";
-            URL object= null;
-            try {
-                object = new URL(url);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            HttpURLConnection con = null;
-            try {
-                con = (HttpURLConnection) object.openConnection();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            con.setDoOutput(true);
-//            con.setDoInput(true);
-//            con.setRequestProperty("Content-Type", "application/json");
-//            con.setRequestProperty("Accept", "application/json");
-            try {
-                con.setRequestMethod("POST");
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-            }
-            try {
-                con.connect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            JSONObject req   = new JSONObject();
-
-            try {
-                req.put("email",mEmail);
-                req.put("password", mPassword);
-                req.put("password_confirmation", mPasswordConfirm);
-                req.put("confirm_success_url", "http://benevent-api.herokuapp.com");
-                OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
-                wr.write(req.toString());
-                wr.flush();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-//display what returns the POST request
-
-            StringBuilder sb = new StringBuilder();
-            int HttpResult = 0;
-            try {
-                HttpResult = con.getResponseCode();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (HttpResult == HttpURLConnection.HTTP_OK) {
-                BufferedReader br = null;
-                try {
-                    br = new BufferedReader(
-                            new InputStreamReader(con.getInputStream(), "utf-8"));
-                    result = con.getInputStream().toString();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String line = null;
-                try {
-                    while ((line = br.readLine()) != null) {
-                        sb.append(line + "\n");
+            String url = "http://benevent-api.herokuapp.com/auth";
+            StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+                    new Response.Listener<String>()
+                    {
+                        @Override
+                        public void onResponse(String response) {
+                            // response
+                            Log.d("Response", response);
+                        }
+                    },
+                    new Response.ErrorListener()
+                    {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // error
+//                            Log.d("Error.Response", response);
+                        }
                     }
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    System.out.println(con.getResponseMessage());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            ) {
+                @Override
+                protected Map<String, String> getParams()
+                {
+                    Map<String, String>  params = new HashMap<>();
+                    params.put("email", mEmail);
+                    params.put("password", mPassword);
+                    params.put("password_confirmation", mPasswordConfirm);
+                    params.put("confirm_success_url", "http://benevent-api.herokuapp.com");
 
-            return result;
+                    return params;
+                }
+            };
+            queue.add(postRequest);
+
+            return "";
         }
 
         @Override
