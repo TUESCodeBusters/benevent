@@ -403,7 +403,6 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Log.d("HttpResult", String.valueOf(HttpResult));
             if (HttpResult == HttpURLConnection.HTTP_OK) {
                 BufferedReader br = null;
                 try {
@@ -435,11 +434,19 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 
         @Override
         protected void onPostExecute(final String success) {
-            showProgress(false);
-            Context c = RegisterActivity.this;
-            CharSequence test = "Register success";
-            Toast.makeText(c, test, Toast.LENGTH_LONG).show();
             mAuthTask = null;
+            showProgress(false);
+
+            if (success != null) {
+                finish();
+                Context c = RegisterActivity.this;
+                CharSequence test = "Register success";
+                Toast.makeText(c, test, Toast.LENGTH_LONG).show();
+            } else {
+                Context c = RegisterActivity.this;
+                CharSequence test = "Register unsuccess";
+                Toast.makeText(c, test, Toast.LENGTH_LONG).show();
+            }
         }
 
         @Override
