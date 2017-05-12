@@ -368,7 +368,7 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 //            con.setRequestProperty("Content-Type", "application/json");
 //            con.setRequestProperty("Accept", "application/json");
             try {
-                con.setRequestMethod("GET");
+                con.setRequestMethod("POST");
             } catch (ProtocolException e) {
                 e.printStackTrace();
             }
