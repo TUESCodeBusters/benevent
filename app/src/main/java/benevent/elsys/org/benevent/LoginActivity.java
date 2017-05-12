@@ -3,7 +3,10 @@ package benevent.elsys.org.benevent;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -208,7 +211,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(email, password, this);
             mAuthTask.execute((String) null);
         }
     }
@@ -321,12 +324,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private final String mEmail;
         private final String mPassword;
+        private final Activity activity;
 
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
 
-        UserLoginTask(String email, String password) {
+        UserLoginTask(String email, String password, Activity activity) {
             mEmail = email;
             mPassword = password;
+            this.activity = activity;
         }
 
         @Override
@@ -340,6 +345,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         public void onResponse(String response) {
                             // response
                             Log.d("Response", response);
+
+                            try {
+                                JSONObject jsonResult = new JSONObject(response);
+                                final String email = jsonResult.getJSONObject("data").getString("email");
+                                SharedPreferences sharedPref = activity.getSharedPreferences(getString(R.string.current_logged_in_email), Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putString(getString(R.string.current_logged_in_email), email);
+                                editor.apply();
+
+                                Log.d("Shared prefs", sharedPref.getString(getString(R.string.current_logged_in_email), null));
+//                                getFragmentManager().executePendingTransactions();
+                                Intent intent = new Intent(activity, MainActivity.class);
+                                startActivity(intent);
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     },
                     new Response.ErrorListener()
