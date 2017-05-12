@@ -12,13 +12,22 @@ public class CalendarActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar);
-        CalendarView calendarView=(CalendarView) findViewById(R.id.calendarView);
+        CalendarView calendarView = (CalendarView) findViewById(R.id.calendarView);
+        calendarView.setDate(System.currentTimeMillis());
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
 
+//            @Override
+//            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+//                Toast.makeText(getApplicationContext(), year + " " + month + " "+dayOfMonth, Toast.LENGTH_LONG).show();
+//                Intent dailyEvents = new Intent(CalendarActivity.this, DailyEventsActivity.class);
+//                startActivity(dailyEvents);
+//            }
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                Toast.makeText(getApplicationContext(), year + " " + month + " "+dayOfMonth, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), year + "-" + (month + 1) + "-" + dayOfMonth, Toast.LENGTH_LONG).show();
                 Intent dailyEvents = new Intent(CalendarActivity.this, DailyEventsActivity.class);
+                String dailyEventsExtra = year + "-" + ((month < 10)? "0" + (month + 1) : (month + 1)) + "-" + ((dayOfMonth < 10)? "0" + dayOfMonth : dayOfMonth);
+                dailyEvents.putExtra("dailyEventsExtra", dailyEventsExtra);
                 startActivity(dailyEvents);
             }
         });

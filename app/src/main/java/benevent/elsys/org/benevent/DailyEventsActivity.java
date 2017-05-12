@@ -2,6 +2,12 @@ package benevent.elsys.org.benevent;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -14,7 +20,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class DailyEventsActivity extends AppCompatActivity {
+
+    private ListView mEvents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +47,25 @@ public class DailyEventsActivity extends AppCompatActivity {
                         JsonElement elem   = parser.parse( response );
 
                         JsonArray elemArr = elem.getAsJsonArray();
-                        System.out.println( elemArr );
-                        System.out.println(elemArr.getClass());
+
+                        mEvents = (ListView) findViewById(R.id.event_list);
+                        List<Event> events = new ArrayList<>();
+
+                        Gson gson = new Gson();
+                        for (JsonElement el : elemArr) {
+                            Event ev = gson.fromJson(el, Event.class);
+                            if(ev.getStart() != null) {
+                                System.out.println(ev);
+                                System.out.println(getIntent().getExtras().getString("dailyEventsExtra"));
+                                System.out.println(ev.getStart().split("T")[0]);
+                                if (ev.getStart().split("T")[0].equals(getIntent().getExtras().getString("dailyEventsExtra"))) {
+                                    events.add(new Event(ev.getName(), ev.getStart().substring(11, 19), ev.getEnd().substring(11, 19)));
+                                }
+                            }
+                        }
+                        EventAdapter adapter = new EventAdapter(DailyEventsActivity.this, events);
+                        mEvents.setAdapter(adapter);
+
                     }
                 }, new Response.ErrorListener() {
             @Override
