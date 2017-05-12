@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,11 +34,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +83,6 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("---------------------------------------");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         // Set up the login form.
@@ -331,7 +339,6 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         private final String mPasswordConfirm;
 
         UserLoginTask(String email, String password, String passwordConfirm) {
-            System.out.println("*************************************************");
             mEmail = email;
             mPassword = password;
             mPasswordConfirm = passwordConfirm;
@@ -339,40 +346,100 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 
         @Override
         protected String doInBackground(String... params) {
-            String urlString = "http://tues.herokuapp.com/sign_up";
-
             String result = "";
 
-            InputStream in = null;
+            String url="http://benevent-api.herokuapp.com/auth";
+            URL object= null;
             try {
-                URL url = new URL(urlString);
-
-                InputStream is = null;
-
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setConnectTimeout(15000);
-                urlConnection.setDoInput(true);
-                urlConnection.connect();
-                int response = urlConnection.getResponseCode();
-
-                is = urlConnection.getInputStream();
-                result = is.toString();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                return e.getMessage();
+                object = new URL(url);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
             }
+
+            HttpURLConnection con = null;
+            try {
+                con = (HttpURLConnection) object.openConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            con.setDoOutput(true);
+//            con.setDoInput(true);
+//            con.setRequestProperty("Content-Type", "application/json");
+//            con.setRequestProperty("Accept", "application/json");
+            try {
+                con.setRequestMethod("GET");
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            }
+            try {
+                con.connect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            JSONObject req   = new JSONObject();
+
+            try {
+                req.put("email",mEmail);
+                req.put("password", mPassword);
+                req.put("password_confirmation", mPasswordConfirm);
+                req.put("confirm_success_url", "http://benevent-api.herokuapp.com");
+                OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+                wr.write(req.toString());
+                wr.flush();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+//display what returns the POST request
+
+            StringBuilder sb = new StringBuilder();
+            int HttpResult = 0;
+            try {
+                HttpResult = con.getResponseCode();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.d("HttpResult", String.valueOf(HttpResult));
+            if (HttpResult == HttpURLConnection.HTTP_OK) {
+                BufferedReader br = null;
+                try {
+                    br = new BufferedReader(
+                            new InputStreamReader(con.getInputStream(), "utf-8"));
+                    result = con.getInputStream().toString();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String line = null;
+                try {
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    System.out.println(con.getResponseMessage());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             return result;
         }
 
         @Override
         protected void onPostExecute(final String success) {
-            System.out.println(success);
             showProgress(false);
             Context c = RegisterActivity.this;
-            CharSequence test = "Register sent";
+            CharSequence test = "Register success";
             Toast.makeText(c, test, Toast.LENGTH_LONG).show();
+            mAuthTask = null;
         }
 
         @Override
