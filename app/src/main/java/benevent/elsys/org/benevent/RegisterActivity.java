@@ -341,44 +341,37 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         protected String doInBackground(String... params) {
             String urlString = "http://tues.herokuapp.com/sign_up";
 
-            String resultToDisplay = "Qkata registraciq";
+            String result = "";
 
             InputStream in = null;
             try {
-                System.out.println("---------------------------------------");
                 URL url = new URL(urlString);
+
+                InputStream is = null;
 
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
-                in = new BufferedInputStream(urlConnection.getInputStream());
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setConnectTimeout(15000);
+                urlConnection.setDoInput(true);
+                urlConnection.connect();
+                int response = urlConnection.getResponseCode();
 
-
+                is = urlConnection.getInputStream();
+                result = is.toString();
             } catch (Exception e) {
-
                 System.out.println(e.getMessage());
-
                 return e.getMessage();
-
             }
-
-            try {
-                resultToDisplay = IOUtils.toString(in, "UTF-8");
-                //to [convert][1] byte stream to a string
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-            return resultToDisplay;
-            // TODO: attempt authentication against a network service.
+            return result;
         }
 
         @Override
         protected void onPostExecute(final String success) {
-            System.out.println("===================================================");
             System.out.println(success);
             showProgress(false);
-            Context c = getApplicationContext();
-            CharSequence test = "Made registration";
+            Context c = RegisterActivity.this;
+            CharSequence test = "Register sent";
             Toast.makeText(c, test, Toast.LENGTH_LONG).show();
         }
 
