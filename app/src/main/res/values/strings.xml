@@ -17,7 +17,8 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="current_logged_in_email"></string>
+    <string name="current_logged_in_email">org.elsys.benevent.CURRENT_LOGGED_IN_EMAIL</string>
+    <string name="current_logged_in_user_id">org.elsys.benevent.CURRENT_LOGGED_IN_USER_ID</string>
     <string name="title_activity_main">MainActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -25,6 +26,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_select_location">Select Location</string>
+    <string name="unavailable_email">none</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
