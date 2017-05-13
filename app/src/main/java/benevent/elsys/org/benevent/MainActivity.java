@@ -1,11 +1,14 @@
 package benevent.elsys.org.benevent;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -61,6 +64,16 @@ public class MainActivity extends AppCompatActivity
         else {
             email.setText(emailText);
         }
+
+        NotificationCompat.Builder mBuilder =
+                (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                .setContentTitle("An event near you")
+                .setContentText("zdr");
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        mNotificationManager.notify(0, mBuilder.build());
     }
 
     @Override
