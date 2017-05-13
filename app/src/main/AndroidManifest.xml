@@ -32,9 +32,9 @@
             android:name=".RegisterActivity"
             android:label="@string/title_activity_register" />
         <activity android:name=".CalendarActivity" />
-        <activity android:name=".DailyEventsActivity"></activity>
-            android:label="@string/title_activity_register" />
-            android:label="@string/title_activity_register"/>
+        <activity android:name=".DailyEventsActivity" />
+        android:label="@string/title_activity_register" />
+        android:label="@string/title_activity_register"/>
         <activity android:name=".CreateEvent" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -55,6 +55,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="benevent.elsys.org.benevent.CreateEvent" />
         </activity>
+        <activity android:name=".DisplayAllEvents"></activity>
     </application>
 
 </manifest>

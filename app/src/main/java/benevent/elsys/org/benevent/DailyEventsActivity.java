@@ -1,5 +1,7 @@
 package benevent.elsys.org.benevent;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -36,7 +38,8 @@ public class DailyEventsActivity extends AppCompatActivity {
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://benevent-api.herokuapp.com/events";
+        SharedPreferences sharedPrefId = this.getSharedPreferences(getString(R.string.current_logged_in_user_id), Context.MODE_PRIVATE);
+        String url ="http://benevent-api.herokuapp.com/events?user_id=" + sharedPrefId.getString(getString(R.string.current_logged_in_user_id), null);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,

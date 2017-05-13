@@ -3,7 +3,9 @@ package benevent.elsys.org.benevent;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -215,8 +217,11 @@ public class CreateEvent extends AppCompatActivity {
 
     public void makeRequest(View view) {
 
-        mCreateEventRequest = new CreateEventRequest("1", startTimeView.getText().toString(),
-                                                     endTimeView.getText().toString(),
+        SharedPreferences sharedPrefId = this.getSharedPreferences(getString(R.string.current_logged_in_user_id), Context.MODE_PRIVATE);
+        String userId = sharedPrefId.getString(getString(R.string.current_logged_in_user_id), null);
+        mCreateEventRequest = new CreateEventRequest(userId,
+                                                     startDatetView.getText().toString() + " " + startTimeView.getText().toString(),
+                                                     endDateView.getText().toString() + " " + startTimeView.getText().toString(),
                                                      nameView.getText().toString(),
                                                      descView.getText().toString(),
                                                      latG.toString(),

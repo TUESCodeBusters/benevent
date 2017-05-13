@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -35,8 +36,9 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this, CreateEvent.class);
+                Toast.makeText(MainActivity.this, "Create event", Toast.LENGTH_LONG).show();
+                startActivity(intent);
             }
         });
 
@@ -122,6 +124,8 @@ public class MainActivity extends AppCompatActivity
         }
         else if(id == R.id.calendar_view) {
             intent = new Intent(this, CalendarActivity.class);
+        } else if(id == R.id.all_events) {
+            intent = new Intent(this, DisplayAllEvents.class);
         }
 
         startActivity(intent);

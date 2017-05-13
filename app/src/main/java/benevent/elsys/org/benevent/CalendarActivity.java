@@ -26,7 +26,15 @@ public class CalendarActivity extends AppCompatActivity {
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
                 Toast.makeText(getApplicationContext(), year + "-" + (month + 1) + "-" + dayOfMonth, Toast.LENGTH_LONG).show();
                 Intent dailyEvents = new Intent(CalendarActivity.this, DailyEventsActivity.class);
-                String dailyEventsExtra = year + "-" + ((month < 10)? "0" + (month + 1) : (month + 1)) + "-" + ((dayOfMonth < 10)? "0" + dayOfMonth : dayOfMonth);
+                System.out.println("Month : " + month);
+                String monthStr = "";
+                if (month + 1 < 10) {
+                    monthStr = "0" + (month + 1);
+                } else {
+                    monthStr = "" + (month + 1);
+                }
+                System.out.println(monthStr);
+                String dailyEventsExtra = year + "-" + monthStr + "-" + ((dayOfMonth < 10)? "0" + dayOfMonth : dayOfMonth);
                 dailyEvents.putExtra("dailyEventsExtra", dailyEventsExtra);
                 startActivity(dailyEvents);
             }
