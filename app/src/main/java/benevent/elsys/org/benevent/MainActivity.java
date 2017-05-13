@@ -1,11 +1,14 @@
 package benevent.elsys.org.benevent;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -45,19 +48,32 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        View header=navigationView.getHeaderView(0);
-/*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
-        TextView email = (TextView)header.findViewById(R.id.email);
+        View header = navigationView.getHeaderView(0);
+
+        TextView email = (TextView) header.findViewById(R.id.user_email);
+
         SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.current_logged_in_email), Context.MODE_PRIVATE);
-        String emailText = sharedPref.getString(getString(R.string.current_logged_in_email), "KON");
+        String emailText = sharedPref.getString(getString(R.string.current_logged_in_email), getString(R.string.unavailable_email));
+
         Log.d("Email", emailText);
-        if(emailText == "KON") {
+
+        if(emailText.equals("none")) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
         else {
             email.setText(emailText);
         }
+
+        NotificationCompat.Builder mBuilder =
+                (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                .setContentTitle("An event near you")
+                .setContentText("zdr");
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        mNotificationManager.notify(0, mBuilder.build());
     }
 
     @Override
